@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora IMVVAD - Instrumento Multidimensional de Vulnerabilidade</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0e27;
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+                radial-gradient(ellipse at top, rgba(99, 102, 241, 0.15), transparent),
+                radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.15), transparent);
+            background-size: 50px 50px, 50px 50px, 100% 100%, 100% 100%;
+            background-position: 0 0, 0 0, center top, center bottom;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 
+                0 0 80px rgba(99, 102, 241, 0.15),
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent,
+                rgba(6, 182, 212, 0.8),
+                rgba(99, 102, 241, 0.8),
+                rgba(139, 92, 246, 0.8),
+                transparent
+            );
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #06b6d4, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 15px;
+            opacity: 0.85;
+            line-height: 1.7;
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .info-box {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-left: 3px solid;
+            border-left-color: #06b6d4;
+            padding: 24px;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .info-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(99, 102, 241, 0.1);
+            border-left-color: #6366f1;
+        }
+
+        .info-box h3 {
+            color: #06b6d4;
+            margin-bottom: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-box p {
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .info-box a {
+            color: #06b6d4;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .info-box a:hover {
+            color: #8b5cf6;
+            border-bottom-color: #8b5cf6;
+        }
+
+        .info-box.warning {
+            border-left-color: #f59e0b;
+            background: rgba(45, 30, 15, 0.6);
+        }
+
+        .info-box.warning h3 {
+            color: #fbbf24;
+        }
+
+        .info-box.alert {
+            border-left-color: #ef4444;
+            background: rgba(45, 15, 20, 0.6);
+        }
+
+        .info-box.alert h3 {
+            color: #f87171;
+        }
+
+        .section {
+            margin-bottom: 32px;
+            padding: 28px;
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid;
+            border-image: linear-gradient(90deg, #06b6d4, #6366f1, #8b5cf6) 1;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-score {
+            font-size: 17px;
+            font-weight: 700;
+            color: #06b6d4;
+            padding: 10px 20px;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .question {
+            margin-bottom: 24px;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .question:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.1);
+        }
+
+        .question-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            background: rgba(30, 41, 59, 0.4);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            border-color: rgba(6, 182, 212, 0.5);
+            background: rgba(6, 182, 212, 0.1);
+            transform: translateX(4px);
+        }
+
+        .option input[type="radio"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #06b6d4;
+        }
+
+        .option label {
+            cursor: pointer;
+            font-size: 14px;
+            color: #cbd5e1;
+            flex: 1;
+        }
+
+        .option.selected {
+            background: rgba(6, 182, 212, 0.15);
+            border-color: #06b6d4;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+        }
+
+        .option.selected label {
+            color: #06b6d4;
+            font-weight: 500;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #06b6d4 0%, #6366f1 50%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 32px;
+            box-shadow: 
+                0 8px 32px rgba(99, 102, 241, 0.4),
+                0 0 40px rgba(6, 182, 212, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .calculate-btn:hover::before {
+            left: 100%;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 48px rgba(99, 102, 241, 0.5),
+                0 0 60px rgba(6, 182, 212, 0.3);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .results {
+            margin-top: 40px;
+            padding: 32px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 48px rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.6s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .results-header h2 {
+            font-size: 28px;
+            color: #06b6d4;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .total-score {
+            font-size: 56px;
+            font-weight: 800;
+            margin: 24px 0;
+            text-shadow: 0 0 40px currentColor;
+        }
+
+        .score-low { 
+            color: #10b981;
+            text-shadow: 0 0 40px rgba(16, 185, 129, 0.5);
+        }
+        .score-moderate { 
+            color: #f59e0b;
+            text-shadow: 0 0 40px rgba(245, 158, 11, 0.5);
+        }
+        .score-high { 
+            color: #f87171;
+            text-shadow: 0 0 40px rgba(248, 113, 113, 0.5);
+        }
+        .score-very-high { 
+            color: #dc2626;
+            text-shadow: 0 0 40px rgba(220, 38, 38, 0.5);
+        }
+
+        .classification {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            margin-top: 12px;
+            border: 2px solid;
+            backdrop-filter: blur(10px);
+        }
+
+        .class-low {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border-color: #10b981;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .class-moderate {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border-color: #f59e0b;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .class-high {
+            background: rgba(248, 113, 113, 0.15);
+            color: #f87171;
+            border-color: #f87171;
+            box-shadow: 0 0 30px rgba(248, 113, 113, 0.3);
+        }
+
+        .class-very-high {
+            background: rgba(220, 38, 38, 0.15);
+            color: #dc2626;
+            border-color: #dc2626;
+            box-shadow: 0 0 30px rgba(220, 38, 38, 0.3);
+        }
+
+        .section-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 32px 0;
+        }
+
+        .section-result {
+            padding: 24px;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .section-result:hover {
+            transform: translateY(-4px);
+            border-color: #06b6d4;
+            box-shadow: 0 8px 24px rgba(6, 182, 212, 0.2);
+        }
+
+        .section-result-title {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-result-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #06b6d4;
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+        }
+
+        .recommendations {
+            margin-top: 32px;
+            padding: 28px;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border-left: 4px solid #06b6d4;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .recommendations h3 {
+            color: #06b6d4;
+            font-size: 22px;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+
+        .recommendation-section {
+            margin-bottom: 24px;
+        }
+
+        .recommendation-section h4 {
+            color: #e2e8f0;
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .recommendation-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .recommendation-section li {
+            padding: 10px 0 10px 28px;
+            position: relative;
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .recommendation-section li:before {
+            content: "▹";
+            position: absolute;
+            left: 8px;
+            color: #06b6d4;
+            font-size: 18px;
+        }
+
+        .alert {
+            padding: 18px 24px;
+            background: rgba(45, 15, 20, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            color: #fca5a5;
+            font-size: 14px;
+            margin-top: 24px;
+        }
+
+        .progress-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(30, 41, 59, 0.8);
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #06b6d4, #6366f1, #8b5cf6);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            flex: 1;
+            min-width: 180px;
+            padding: 14px 24px;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            color: #06b6d4;
+            border: 2px solid rgba(6, 182, 212, 0.3);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(6, 182, 212, 0.15);
+            border-color: #06b6d4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
+        }
+
+        .control-btn.pdf {
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .control-btn.pdf:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: #f87171;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+        }
+
+        .control-btn.json {
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .control-btn.json:hover {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: #10b981;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .info-timestamp {
+            margin-top: 24px;
+            padding: 16px;
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(8px);
+            border-radius: 10px;
+            font-size: 13px;
+            color: #94a3b8;
+            text-align: center;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 16px;
+                margin: 10px;
+            }
+
+            .header {
+                padding: 40px 24px;
+            }
+
+            .header h1 {
+                font-size: 26px;
+            }
+
+            .content {
+                padding: 24px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .section-results {
+                grid-template-columns: 1fr;
+            }
+
+            .control-buttons {
+                flex-direction: column;
+            }
+
+            .control-btn {
+                min-width: 100%;
+            }
+        }
+
+        .footer {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 24px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .footer strong {
+            color: #06b6d4;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            body::before {
+                display: none;
+            }
+
+            .container {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                background: white;
+            }
+
+            .header, .section, .info-box, .question, .results {
+                background: white;
+                color: black;
+                border-color: #ddd;
+            }
+
+            .calculate-btn, .control-buttons, .progress-indicator {
+                display: none;
+            }
+
+            .question {
+                page-break-inside: avoid;
+            }
+
+            * {
+                color: black !important;
+            }
+
+            h1, h2, h3, h4 {
+                color: #1e293b !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-indicator">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>⚡ CALCULADORA IMVVAD</h1>
+            <p>Instrumento Multidimensional de Rastreio da Vulnerabilidade<br>à Violência Algorítmica Desenvolvimental</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <h3>💡 Sobre o Instrumento</h3>
+                <p>O IMVVAD é um protótipo de rastreio destinado à identificação sistemática de fatores de risco que indicam maior suscetibilidade de crianças e adolescentes à violência digital estrutural. Este instrumento avalia 26 indicadores distribuídos em 4 dimensões complementares.</p>
+                <p style="margin-top: 15px; font-size: 13px; color: #94a3b8;">
+                    <strong>Autora:</strong> Ana Carla Costa Rocha | <a href="mailto:ana.carla@aluno.unb.br">ana.carla@aluno.unb.br</a> | (31) 99405-7774<br>
+                    <strong>Orientador:</strong> Prof. Dr. Jorge Luis Lopes Zeredo | <strong>Instituição:</strong> Universidade de Brasília (UnB)
+                </p>
+            </div>
+
+            <div class="info-box warning">
+                <h3>📋 Instruções de Aplicação</h3>
+                <p>Este formulário deve ser preenchido pelo profissional com base nas informações coletadas durante a entrevista. Cada indicador possui uma pontuação específica (0 a 2 pontos) que será somada ao final para estratificar o nível de vulnerabilidade.</p>
+            </div>
+
+            <div class="info-box alert">
+                <h3>⚠️ Atenção Importante</h3>
+                <p><strong>Este instrumento é um protótipo em validação.</strong> Os resultados devem ser interpretados com cautela por profissionais qualificados e não substituem avaliação clínica completa.</p>
+                <p style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(239, 68, 68, 0.2);">
+                    📖 <strong>Manual completo:</strong> <a href="https://projetodemestrado-ohzm1rv.gamma.site/" target="_blank">Acesse aqui para orientações sobre interpretação e intervenções</a>
+                </p>
+            </div>
+            <form id="imvvadForm">
+                <!-- SEÇÃO I: FATORES INDIVIDUAIS -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">📊 Seção I: Fatores Individuais</span>
+                        <span class="section-score" id="score-section1">0%</span>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">1.1 Idade</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q1_1" value="0" id="q1_1_a">
+                                <label for="q1_1_a">16-18 anos (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_1" value="1" id="q1_1_b">
+                                <label for="q1_1_b">13-15 anos (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_1" value="2" id="q1_1_c">
+                                <label for="q1_1_c">7-12 anos (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">1.2 Gênero</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q1_2" value="0" id="q1_2_a">
+                                <label for="q1_2_a">Masculino (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_2" value="1" id="q1_2_b">
+                                <label for="q1_2_b">Feminino (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_2" value="2" id="q1_2_c">
+                                <label for="q1_2_c">Outros (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">1.3 Auto Declaração de Raça/Cor</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q1_3" value="0" id="q1_3_a">
+                                <label for="q1_3_a">Branco (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_3" value="1" id="q1_3_b">
+                                <label for="q1_3_b">Pardo (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_3" value="2" id="q1_3_c">
+                                <label for="q1_3_c">Negro/Indígena/outras cores e etnias (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">1.4 Pessoa com Deficiência</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q1_4" value="0" id="q1_4_a">
+                                <label for="q1_4_a">Não (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_4" value="1" id="q1_4_b">
+                                <label for="q1_4_b">Física/Visual/Auditiva (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_4" value="2" id="q1_4_c">
+                                <label for="q1_4_c">Intelectual/Psicossocial/Múltiplas (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">1.5 Escolaridade</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q1_5" value="0" id="q1_5_a">
+                                <label for="q1_5_a">Matriculado, frequente e correspondente à série (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_5" value="1" id="q1_5_b">
+                                <label for="q1_5_b">Repetiu de ano/dificuldades de aprendizagem (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_5" value="2" id="q1_5_c">
+                                <label for="q1_5_c">Fora da escola (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">1.6 Diagnóstico Neuropsicológico</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q1_6" value="0" id="q1_6_a">
+                                <label for="q1_6_a">Nenhum (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_6" value="1" id="q1_6_b">
+                                <label for="q1_6_b">TDAH/Dislexia/outros transtornos leves (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_6" value="2" id="q1_6_c">
+                                <label for="q1_6_c">TEA/TEA e comorbidades/Esquizofrenia/Bipolaridade/transtornos graves (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">1.7 Histórico de Transtornos Psicológicos</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q1_7" value="0" id="q1_7_a">
+                                <label for="q1_7_a">Nenhum (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_7" value="1" id="q1_7_b">
+                                <label for="q1_7_b">Ansiedade leve/depressão moderada/automutilação (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_7" value="2" id="q1_7_c">
+                                <label for="q1_7_c">Ansiedade severa/depressão grave/tentativas de autoextermínio (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">1.8 Tempo de Uso de Tela</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q1_8" value="0" id="q1_8_a">
+                                <label for="q1_8_a">&lt; 2h (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_8" value="1" id="q1_8_b">
+                                <label for="q1_8_b">2-5h (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_8" value="2" id="q1_8_c">
+                                <label for="q1_8_c">&gt; 5h (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">1.9 Uso da Tela Durante a Madrugada (23h-6h)</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q1_9" value="0" id="q1_9_a">
+                                <label for="q1_9_a">Nunca (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_9" value="1" id="q1_9_b">
+                                <label for="q1_9_b">Algumas vezes na semana (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_9" value="2" id="q1_9_c">
+                                <label for="q1_9_c">Diariamente (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">1.10 Conteúdo Digital Consumido</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q1_10" value="0" id="q1_10_a">
+                                <label for="q1_10_a">Predominantemente educativo (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_10" value="1" id="q1_10_b">
+                                <label for="q1_10_b">Misto (educacional e recreativo) (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_10" value="2" id="q1_10_c">
+                                <label for="q1_10_c">Redes sociais/influencer/jogos/pornografia (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">1.11 Uso de Algoritmos para Interação Social (ex.: IA, redes sociais)</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q1_11" value="0" id="q1_11_a">
+                                <label for="q1_11_a">Pouco ou nenhum (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_11" value="1" id="q1_11_b">
+                                <label for="q1_11_b">Moderado (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q1_11" value="2" id="q1_11_c">
+                                <label for="q1_11_c">Alto (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO II: FATORES SOCIAIS E ESTRUTURAIS -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">🏘️ Seção II: Fatores Sociais e Estruturais</span>
+                        <span class="section-score" id="score-section2">0%</span>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">2.1 Classe Social</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q2_1" value="0" id="q2_1_a">
+                                <label for="q2_1_a">&gt; 5 salários mínimos (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_1" value="1" id="q2_1_b">
+                                <label for="q2_1_b">2-5 salários mínimos (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_1" value="2" id="q2_1_c">
+                                <label for="q2_1_c">&lt; 2 salários mínimos (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">2.2 Histórico de Violência (doméstica/digital/urbana/bullying/trabalho infantil)</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q2_2" value="0" id="q2_2_a">
+                                <label for="q2_2_a">Nenhum (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_2" value="1" id="q2_2_b">
+                                <label for="q2_2_b">Episódios isolados (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_2" value="2" id="q2_2_c">
+                                <label for="q2_2_c">Recorrente (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">2.3 Ato Infracional</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q2_3" value="0" id="q2_3_a">
+                                <label for="q2_3_a">Nenhum (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_3" value="1" id="q2_3_b">
+                                <label for="q2_3_b">Episódio isolado (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_3" value="2" id="q2_3_c">
+                                <label for="q2_3_c">Reincidente (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">2.4 Situação de Moradia</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q2_4" value="0" id="q2_4_a">
+                                <label for="q2_4_a">Casa própria (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_4" value="1" id="q2_4_b">
+                                <label for="q2_4_b">Alugada (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_4" value="2" id="q2_4_c">
+                                <label for="q2_4_c">Ocupação/Informal/Situação de rua/Acolhimento institucional (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">2.5 Situação de Migração (Refugiado, Deslocado, Imigrante)</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q2_5" value="0" id="q2_5_a">
+                                <label for="q2_5_a">Não (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_5" value="1" id="q2_5_b">
+                                <label for="q2_5_b">Sim, deslocado interno (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_5" value="2" id="q2_5_c">
+                                <label for="q2_5_c">Sim, refugiado/imigrante (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">2.6 Cultura e Lazer</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q2_6" value="0" id="q2_6_a">
+                                <label for="q2_6_a">Participa regularmente de atividades culturais (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_6" value="1" id="q2_6_b">
+                                <label for="q2_6_b">Participa ocasionalmente ou tem acesso limitado (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_6" value="2" id="q2_6_c">
+                                <label for="q2_6_c">Sem acesso ou sem interesse em atividades culturais (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">2.7 Esporte e Atividades Físicas</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q2_7" value="0" id="q2_7_a">
+                                <label for="q2_7_a">Pratica esportes regularmente (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_7" value="1" id="q2_7_b">
+                                <label for="q2_7_b">Pratica esporadicamente (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_7" value="2" id="q2_7_c">
+                                <label for="q2_7_c">Não pratica esportes ou atividades físicas (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">2.8 Profissionalização</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q2_8" value="0" id="q2_8_a">
+                                <label for="q2_8_a">Nenhum (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_8" value="1" id="q2_8_b">
+                                <label for="q2_8_b">Aprendizagem (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_8" value="2" id="q2_8_c">
+                                <label for="q2_8_c">Trabalho infantil ou informal (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">2.9 Tempo Livre e Entretenimento</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q2_9" value="0" id="q2_9_a">
+                                <label for="q2_9_a">Diversifica atividades (tempo equilibrado, lazer offline) (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_9" value="1" id="q2_9_b">
+                                <label for="q2_9_b">Grande parte online, mas mantém atividades offline (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q2_9" value="2" id="q2_9_c">
+                                <label for="q2_9_c">Predominantemente em telas sem supervisão (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO III: EDUCAÇÃO DIGITAL -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">🎓 Seção III: Educação Digital</span>
+                        <span class="section-score" id="score-section3">0%</span>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">3.1 Acesso à Educação Digital</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q3_1" value="0" id="q3_1_a">
+                                <label for="q3_1_a">Recebe instrução formal sobre tecnologia e segurança digital (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q3_1" value="1" id="q3_1_b">
+                                <label for="q3_1_b">Conhecimento digital informal ou esporádico (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q3_1" value="2" id="q3_1_c">
+                                <label for="q3_1_c">Pouco ou nenhum conhecimento sobre riscos e algoritmos (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">3.2 Conhecimento sobre Algoritmos</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q3_2" value="0" id="q3_2_a">
+                                <label for="q3_2_a">Entende como os algoritmos personalizam conteúdos (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q3_2" value="1" id="q3_2_b">
+                                <label for="q3_2_b">Alguma noção sobre filtros algorítmicos, mas sem aprofundamento (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q3_2" value="2" id="q3_2_c">
+                                <label for="q3_2_c">Não tem consciência de como funciona a personalização (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">3.3 Capacidade de Identificar Desinformação e Riscos Online</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q3_3" value="0" id="q3_3_a">
+                                <label for="q3_3_a">Consegue distinguir fake news, golpes e manipulação (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q3_3" value="1" id="q3_3_b">
+                                <label for="q3_3_b">Reconhece alguns riscos, mas pode ser influenciado (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q3_3" value="2" id="q3_3_c">
+                                <label for="q3_3_c">Dificuldade em reconhecer fake news e manipulação (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO IV: SUPERVISÃO PARENTAL -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">👨‍👩‍👧‍👦 Seção IV: Supervisão Parental</span>
+                        <span class="section-score" id="score-section4">0%</span>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">4.1 Supervisão Parental sobre o Uso da Tecnologia</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q4_1" value="0" id="q4_1_a">
+                                <label for="q4_1_a">Pais monitoram ativamente, impõem regras e discutem conteúdos (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q4_1" value="1" id="q4_1_b">
+                                <label for="q4_1_b">Supervisão parcial; há algumas regras, pouco acompanhamento (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q4_1" value="2" id="q4_1_c">
+                                <label for="q4_1_c">Uso sem restrições ou supervisão mínima/inexistente (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">4.2 Diálogo sobre o Mundo Digital</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q4_2" value="0" id="q4_2_a">
+                                <label for="q4_2_a">Discussões frequentes sobre riscos online e segurança digital (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q4_2" value="1" id="q4_2_b">
+                                <label for="q4_2_b">Ocasionalmente conversa, mas sem aprofundamento (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q4_2" value="2" id="q4_2_c">
+                                <label for="q4_2_c">Nenhum ou quase nenhum diálogo sobre segurança digital (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-title">4.3 Controle de Acesso e Privacidade</label>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" name="q4_3" value="0" id="q4_3_a">
+                                <label for="q4_3_a">Uso de ferramentas de controle parental e consumo consciente (0 pontos)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q4_3" value="1" id="q4_3_b">
+                                <label for="q4_3_b">Alguma preocupação com privacidade, mas sem medidas consistentes (1 ponto)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" name="q4_3" value="2" id="q4_3_c">
+                                <label for="q4_3_c">Sem controle, acesso irrestrito a conteúdos e redes sociais (2 pontos)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="calculate-btn" onclick="calculateIMVVAD()">
+                    🔬 Calcular IMVVAD
+                </button>
+            </form>
+
+            <!-- RESULTADOS -->
+            <div class="results" id="results">
+                <div class="results-header">
+                    <h2>📊 Resultado da Avaliação IMVVAD</h2>
+                    <div class="total-score" id="totalScore">0%</div>
+                    <div class="classification" id="classification">-</div>
+                </div>
+
+                <div class="section-results">
+                    <div class="section-result">
+                        <div class="section-result-title">Fatores Individuais</div>
+                        <div class="section-result-value" id="result-section1">0%</div>
+                    </div>
+                    <div class="section-result">
+                        <div class="section-result-title">Fatores Sociais</div>
+                        <div class="section-result-value" id="result-section2">0%</div>
+                    </div>
+                    <div class="section-result">
+                        <div class="section-result-title">Educação Digital</div>
+                        <div class="section-result-value" id="result-section3">0%</div>
+                    </div>
+                    <div class="section-result">
+                        <div class="section-result-title">Supervisão Parental</div>
+                        <div class="section-result-value" id="result-section4">0%</div>
+                    </div>
+                </div>
+
+                <div class="recommendations" id="recommendations">
+                    <!-- Recomendações serão inseridas aqui dinamicamente -->
+                </div>
+
+                <div class="alert">
+                    <strong>⚠️ Atenção:</strong> Este instrumento é um protótipo em validação. Os resultados devem ser interpretados com cautela por profissionais qualificados e não substituem avaliação clínica completa.
+                </div>
+
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="window.print()">
+                        🖨️ Imprimir Resultados
+                    </button>
+                    <button class="control-btn pdf" onclick="exportToPDF()">
+                        📄 Exportar PDF
+                    </button>
+                    <button class="control-btn json" onclick="exportToJSON()">
+                        💾 Salvar Dados (JSON)
+                    </button>
+                </div>
+                
+                <div class="info-timestamp" id="timestamp">
+                    <!-- Timestamp será inserido aqui -->
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>IMVVAD</strong> - Instrumento Multidimensional de Rastreio da Vulnerabilidade à Violência Algorítmica Desenvolvimental</p>
+            <p>Autora: Ana Carla Costa Rocha | Orientador: Dr. Prof. Jorge Luis Lopes Zeredo</p>
+            <p>Universidade de Brasília (UnB) - Programa de Pós-Graduação em Ciências e Tecnologias em Saúde</p>
+            <p style="margin-top: 10px; font-size: 12px;">© 2025 - Todos os direitos reservados</p>
+        </div>
+    </div>
+
+    <script>
+        // Atualizar score das seções em tempo real
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Destacar opção selecionada
+                const parent = this.closest('.question');
+                parent.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                this.closest('.option').classList.add('selected');
+                
+                // Calcular score da seção
+                updateSectionScores();
+                updateProgressBar();
+            });
+        });
+
+        function updateSectionScores() {
+            // Seção I: 11 questões (q1_1 a q1_11)
+            updateSectionScore('section1', 11, 'q1_');
+            
+            // Seção II: 9 questões (q2_1 a q2_9)
+            updateSectionScore('section2', 9, 'q2_');
+            
+            // Seção III: 3 questões (q3_1 a q3_3)
+            updateSectionScore('section3', 3, 'q3_');
+            
+            // Seção IV: 3 questões (q4_1 a q4_3)
+            updateSectionScore('section4', 3, 'q4_');
+        }
+
+        function updateSectionScore(sectionId, totalQuestions, prefix) {
+            let sum = 0;
+            let answered = 0;
+            
+            for (let i = 1; i <= totalQuestions; i++) {
+                const name = prefix + i;
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                if (selected) {
+                    sum += parseInt(selected.value);
+                    answered++;
+                }
+            }
+            
+            if (answered > 0) {
+                const percentage = (sum / (totalQuestions * 2)) * 100;
+                document.getElementById(`score-${sectionId}`).textContent = percentage.toFixed(1) + '%';
+            }
+        }
+
+        function updateProgressBar() {
+            const totalQuestions = 26;
+            let answered = 0;
+            
+            document.querySelectorAll('input[type="radio"]:checked').forEach(() => {
+                answered++;
+            });
+            
+            const progress = (answered / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function calculateIMVVAD() {
+            const form = document.getElementById('imvvadForm');
+            const totalQuestions = 26;
+            
+            // Verificar se todas as questões foram respondidas
+            let answered = 0;
+            let totalScore = 0;
+            
+            // Seção I: 11 questões
+            for (let i = 1; i <= 11; i++) {
+                const selected = document.querySelector(`input[name="q1_${i}"]:checked`);
+                if (selected) {
+                    answered++;
+                    totalScore += parseInt(selected.value);
+                }
+            }
+            
+            // Seção II: 9 questões
+            for (let i = 1; i <= 9; i++) {
+                const selected = document.querySelector(`input[name="q2_${i}"]:checked`);
+                if (selected) {
+                    answered++;
+                    totalScore += parseInt(selected.value);
+                }
+            }
+            
+            // Seção III: 3 questões
+            for (let i = 1; i <= 3; i++) {
+                const selected = document.querySelector(`input[name="q3_${i}"]:checked`);
+                if (selected) {
+                    answered++;
+                    totalScore += parseInt(selected.value);
+                }
+            }
+            
+            // Seção IV: 3 questões
+            for (let i = 1; i <= 3; i++) {
+                const selected = document.querySelector(`input[name="q4_${i}"]:checked`);
+                if (selected) {
+                    answered++;
+                    totalScore += parseInt(selected.value);
+                }
+            }
+            
+            if (answered < totalQuestions) {
+                alert(`Por favor, responda todas as ${totalQuestions} questões antes de calcular. Você respondeu ${answered} de ${totalQuestions}.`);
+                return;
+            }
+            
+            // Calcular IMVVAD: [(Soma dos pontos) ÷ (Total de itens × 2)] × 100
+            const imvvadPercentage = (totalScore / (totalQuestions * 2)) * 100;
+            
+            // Calcular porcentagens por seção
+            const section1Score = calculateSectionPercentage(11, 'q1_');
+            const section2Score = calculateSectionPercentage(9, 'q2_');
+            const section3Score = calculateSectionPercentage(3, 'q3_');
+            const section4Score = calculateSectionPercentage(3, 'q4_');
+            
+            // Exibir resultados
+            displayResults(imvvadPercentage, section1Score, section2Score, section3Score, section4Score);
+            
+            // Scroll suave para os resultados
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function calculateSectionPercentage(totalQuestions, prefix) {
+            let sum = 0;
+            for (let i = 1; i <= totalQuestions; i++) {
+                const selected = document.querySelector(`input[name="${prefix}${i}"]:checked`);
+                if (selected) {
+                    sum += parseInt(selected.value);
+                }
+            }
+            return (sum / (totalQuestions * 2)) * 100;
+        }
+
+        function displayResults(total, s1, s2, s3, s4) {
+            // Mostrar seção de resultados
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.classList.add('show');
+            
+            // Atualizar score total
+            const totalScoreEl = document.getElementById('totalScore');
+            totalScoreEl.textContent = total.toFixed(1) + '%';
+            
+            // Definir classe de cor
+            totalScoreEl.className = 'total-score';
+            if (total <= 20) {
+                totalScoreEl.classList.add('score-low');
+            } else if (total <= 50) {
+                totalScoreEl.classList.add('score-moderate');
+            } else if (total <= 75) {
+                totalScoreEl.classList.add('score-high');
+            } else {
+                totalScoreEl.classList.add('score-very-high');
+            }
+            
+            // Atualizar classificação
+            const classificationEl = document.getElementById('classification');
+            let classification = '';
+            let classificationClass = '';
+            
+            if (total <= 20) {
+                classification = 'Baixa Vulnerabilidade';
+                classificationClass = 'class-low';
+            } else if (total <= 50) {
+                classification = 'Moderada Vulnerabilidade';
+                classificationClass = 'class-moderate';
+            } else if (total <= 75) {
+                classification = 'Alta Vulnerabilidade';
+                classificationClass = 'class-high';
+            } else {
+                classification = 'Muito Alta Vulnerabilidade';
+                classificationClass = 'class-very-high';
+            }
+            
+            classificationEl.textContent = classification;
+            classificationEl.className = 'classification ' + classificationClass;
+            
+            // Atualizar scores das seções
+            document.getElementById('result-section1').textContent = s1.toFixed(1) + '%';
+            document.getElementById('result-section2').textContent = s2.toFixed(1) + '%';
+            document.getElementById('result-section3').textContent = s3.toFixed(1) + '%';
+            document.getElementById('result-section4').textContent = s4.toFixed(1) + '%';
+            
+            // Gerar recomendações
+            generateRecommendations(total);
+        }
+
+        function generateRecommendations(score) {
+            const recommendationsDiv = document.getElementById('recommendations');
+            let html = '<h3>📋 Recomendações e Intervenções</h3>';
+            
+            if (score <= 20) {
+                // Baixa Vulnerabilidade
+                html += `
+                    <div class="recommendation-section">
+                        <h4>👶 Para Crianças/Adolescentes:</h4>
+                        <ul>
+                            <li>Manutenção de práticas digitais saudáveis já estabelecidas</li>
+                            <li>Reforço de competências críticas existentes</li>
+                            <li>Estímulo ao protagonismo digital positivo</li>
+                        </ul>
+                    </div>
+                    <div class="recommendation-section">
+                        <h4>👨‍👩‍👧 Para Famílias/Responsáveis:</h4>
+                        <ul>
+                            <li>Continuidade das práticas de mediação efetivas</li>
+                            <li>Atualização sobre tendências digitais emergentes</li>
+                            <li>Diálogo contínuo sobre experiências digitais</li>
+                        </ul>
+                    </div>
+                    <div class="recommendation-section">
+                        <h4>🤝 Articulação com a Rede:</h4>
+                        <ul>
+                            <li>Participação em atividades preventivas</li>
+                            <li>Engajamento em programas de cidadania digital</li>
+                        </ul>
+                    </div>
+                    <div class="recommendation-section">
+                        <h4>📅 Monitoramento:</h4>
+                        <ul>
+                            <li><strong>Reavaliação anual</strong></li>
+                        </ul>
+                    </div>
+                `;
+            } else if (score <= 50) {
+                // Moderada Vulnerabilidade
+                html += `
+                    <div class="recommendation-section">
+                        <h4>👶 Para Crianças/Adolescentes:</h4>
+                        <ul>
+                            <li>Participação em programas estruturados de alfabetização digital crítica</li>
+                            <li>Desenvolvimento de competências específicas de autorregulação digital</li>
+                            <li>Diversificação de atividades e interesses não-digitais</li>
+                        </ul>
+                    </div>
+                    <div class="recommendation-section">
+                        <h4>👨‍👩‍👧 Para Famílias/Responsáveis:</h4>
+                        <ul>
+                            <li>Implementação de práticas de mediação ativa e co-uso</li>
+                            <li>Estabelecimento de limites e regras claras sobre uso digital</li>
+                            <li>Participação em oficinas de orientação parental</li>
+                        </ul>
+                    </div>
+                    <div class="recommendation-section">
+                        <h4>🤝 Articulação com a Rede:</h4>
+                        <ul>
+                            <li>Vinculação a programas de contraturno com componente de educação digital</li>
+                            <li>Articulação com escola para abordagem integrada</li>
+                        </ul>
+                    </div>
+                    <div class="recommendation-section">
+                        <h4>📅 Monitoramento:</h4>
+                        <ul>
+                            <li><strong>Reavaliação semestral</strong></li>
+                        </ul>
+                    </div>
+                `;
+            } else if (score <= 75) {
+                // Alta Vulnerabilidade
+                html += `
+                    <div class="recommendation-section">
+                        <h4>👶 Para Crianças/Adolescentes:</h4>
+                        <ul>
+                            <li>Acompanhamento profissional regular com ênfase em aspectos digitais</li>
+                            <li>Participação em grupo terapêutico específico, se disponível</li>
+                            <li>Implementação de plano estruturado de uso digital supervisionado</li>
+                        </ul>
+                    </div>
+                    <div class="recommendation-section">
+                        <h4>👨‍👩‍👧 Para Famílias/Responsáveis:</h4>
+                        <ul>
+                            <li>Participação em programa de orientação parental</li>
+                            <li>Implementação de estratégias específicas de monitoramento e mediação</li>
+                            <li>Reorganização de rotinas familiares para inclusão de atividades não-digitais</li>
+                        </ul>
+                    </div>
+                    <div class="recommendation-section">
+                        <h4>🤝 Articulação com a Rede:</h4>
+                        <ul>
+                            <li><strong>Avaliar notificação ficha SINAN e aos órgãos competentes</strong></li>
+                            <li>Articulação com serviços da RAPS (Rede de Atenção Psicossocial)</li>
+                            <li>Vinculação a programas especializados disponíveis na comunidade</li>
+                        </ul>
+                    </div>
+                    <div class="recommendation-section">
+                        <h4>📅 Monitoramento:</h4>
+                        <ul>
+                            <li><strong>Reavaliação trimestral</strong></li>
+                        </ul>
+                    </div>
+                `;
+            } else {
+                // Muito Alta Vulnerabilidade
+                html += `
+                    <div class="recommendation-section">
+                        <h4>👶 Para Crianças/Adolescentes:</h4>
+                        <ul>
+                            <li><strong>Avaliação psicológica completa e especializada</strong></li>
+                            <li>Implementação de plano terapêutico individual</li>
+                            <li>Reconfiguração de padrões de uso digital</li>
+                        </ul>
+                    </div>
+                    <div class="recommendation-section">
+                        <h4>👨‍👩‍👧 Para Famílias/Responsáveis:</h4>
+                        <ul>
+                            <li><strong>Acompanhamento familiar intensivo</strong></li>
+                            <li>Suporte para implementação de mudanças nas dinâmicas familiares</li>
+                        </ul>
+                    </div>
+                    <div class="recommendation-section">
+                        <h4>🤝 Articulação com a Rede:</h4>
+                        <ul>
+                            <li><strong>AVALIAR NOTIFICAÇÃO FICHA SINAN E AOS ÓRGÃOS COMPETENTES</strong></li>
+                            <li><strong>Mobilização de equipe multidisciplinar</strong></li>
+                            <li>Estabelecimento de rede de suporte integrada</li>
+                            <li>Prioridade no acesso aos serviços especializados</li>
+                        </ul>
+                    </div>
+                    <div class="recommendation-section">
+                        <h4>📅 Monitoramento:</h4>
+                        <ul>
+                            <li><strong>Reavaliação MENSAL até estabilização</strong></li>
+                        </ul>
+                    </div>
+                    <div style="background: #fef2f2; border: 2px solid #ef4444; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <strong style="color: #991b1b;">⚠️ ATENÇÃO - SITUAÇÃO CRÍTICA:</strong>
+                        <p style="color: #7f1d1d; margin-top: 8px; font-size: 14px;">
+                            Este caso requer intervenção multidimensional intensiva e prioritária. 
+                            Considere acionar imediatamente os serviços de proteção e realizar encaminhamento urgente.
+                        </p>
+                    </div>
+                `;
+            }
+            
+            recommendationsDiv.innerHTML = html;
+            
+            // Adicionar timestamp
+            updateTimestamp();
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            const timestampEl = document.getElementById('timestamp');
+            const formatted = now.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            timestampEl.innerHTML = `📅 Avaliação realizada em: <strong>${formatted}</strong>`;
+        }
+
+        function exportToPDF() {
+            // Criar informação adicional antes de imprimir
+            alert('📄 A impressão será aberta.\n\n💡 Dica: Na janela de impressão, selecione "Salvar como PDF" para gerar o arquivo PDF dos resultados.');
+            window.print();
+        }
+
+        function exportToJSON() {
+            // Coletar todos os dados do formulário
+            const formData = {};
+            const form = document.getElementById('imvvadForm');
+            const inputs = form.querySelectorAll('input[type="radio"]:checked');
+            
+            inputs.forEach(input => {
+                const questionName = input.name;
+                const value = input.value;
+                const label = input.closest('.option').querySelector('label').textContent;
+                formData[questionName] = {
+                    value: parseInt(value),
+                    text: label
+                };
+            });
+
+            // Coletar resultados
+            const results = {
+                timestamp: new Date().toISOString(),
+                dataAvaliacao: new Date().toLocaleString('pt-BR'),
+                respostas: formData,
+                pontuacoes: {
+                    total: parseFloat(document.getElementById('totalScore').textContent),
+                    secao1: parseFloat(document.getElementById('result-section1').textContent),
+                    secao2: parseFloat(document.getElementById('result-section2').textContent),
+                    secao3: parseFloat(document.getElementById('result-section3').textContent),
+                    secao4: parseFloat(document.getElementById('result-section4').textContent)
+                },
+                classificacao: document.getElementById('classification').textContent,
+                instrumento: {
+                    nome: 'IMVVAD',
+                    versao: '1.0',
+                    autora: 'Ana Carla Costa Rocha',
+                    instituicao: 'Universidade de Brasília (UnB)'
+                }
+            };
+
+            // Criar e baixar arquivo JSON
+            const dataStr = JSON.stringify(results, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            
+            // Nome do arquivo com data e hora
+            const filename = `IMVVAD_${new Date().toISOString().slice(0,10)}_${new Date().getTime()}.json`;
+            link.download = filename;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            alert('✅ Dados salvos com sucesso!\n\n📁 Arquivo: ' + filename + '\n\n💡 Este arquivo JSON contém todas as respostas e pontuações. Você pode usar esses dados para análise posterior ou importação em outros sistemas.');
+        }
+
+        // Inicializar
+        updateProgressBar();
+    </script>
+</body>
+</html>
